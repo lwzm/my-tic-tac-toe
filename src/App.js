@@ -1,15 +1,15 @@
+/* globals wx:false */
+
 import React from 'react'
+import {ThemeContext, V} from './ctx'
+import Test from './test'
 
 import "./style.css"
 
 
-function Square({value, onClick}) {
-    return (
-        <button className="square" onClick={onClick}>
-            {value}
-        </button>
-    )
-}
+const Square = ({value, onClick}) => <button className="square" onClick={onClick}>
+    {value}
+</button>
 
 
 function Board({squares, onClick}) {
@@ -34,6 +34,9 @@ function Board({squares, onClick}) {
             {renderSquare(7)}
             {renderSquare(8)}
         </div>
+        <V.Consumer>
+            {x => <div>{x}</div>}
+        </V.Consumer>
     </div>
 }
 
@@ -103,9 +106,11 @@ class App extends React.Component {
         if (this.winner || squares[i]) {
             return
         }
+
+        squares[i] = this.nextPlayer
+
         const stepNumber = this.state.stepNumber + 1
         const history = this.state.history.slice(0, stepNumber)
-        squares[i] = this.nextPlayer
         history.push(squares)
         this.setState({
             history,
@@ -120,20 +125,36 @@ class App extends React.Component {
     }
 
     render() {
-        return <div className="game">
-            <div className="game-board">
-                <Board
-                    squares={this.currentSquares}
-                    onClick={this.handleClick}
-                />
+        return <div>
+            <div className="game">
+                <div className="game-board">
+                    <V.Provider value={this.state.stepNumber}>
+                        <Board
+                            squares={this.currentSquares}
+                            onClick={this.handleClick}
+                        />
+                    </V.Provider>
+                </div>
+
+                <div className="game-info">
+                    <div>{this.info}</div>
+                    <ol>{this.moves}</ol>
+                </div>
+
             </div>
-            <div className="game-info">
-                <div>{this.info}</div>
-                <ol>{this.moves}</ol>
-            </div>
+
+                <button onClick={test}>WX</button>
+            <Test />
         </div>
     }
 
+}
+
+function test() {
+    console.log("test")
+    if (window.__wxjs_environment) {
+        wx.miniProgram.navigateTo({url: "/pages/logs/logs"})
+    }
 }
 
 // ========================================
