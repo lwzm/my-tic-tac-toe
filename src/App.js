@@ -1,18 +1,20 @@
 /* globals wx:false */
 
 import React from 'react'
-import {ThemeContext, V} from './ctx'
+import { ThemeContext, V } from './ctx'
 import Test from './test'
+
+import axios from 'axios'
 
 import "./style.css"
 
 
-const Square = ({value, onClick}) => <button className="square" onClick={onClick}>
+const Square = ({ value, onClick }) => <button className="square" onClick={onClick}>
     {value}
 </button>
 
 
-function Board({squares, onClick}) {
+function Board({ squares, onClick }) {
     const renderSquare = (i) => <Square
         value={squares[i]}
         onClick={() => onClick(i)}
@@ -60,6 +62,7 @@ class App extends React.Component {
                 Array(9).fill(""),
             ],
             stepNumber: 0,
+            ip: "none",
         }
     }
 
@@ -101,7 +104,15 @@ class App extends React.Component {
         })
     }
 
-    handleClick = (i) => {
+    handleClick = async (i) => {
+        // axios.get("http://ip.tyio.net").then(rsp => {
+        //     this.setState({ip: rsp.data})
+        // })
+
+        let resp
+        await sleep()
+        resp = await axios.get("http://ip.tyio.net")
+        this.setState({ ip: resp.data })
         const squares = this.currentSquares.slice()  // make a copy
         if (this.winner || squares[i]) {
             return
@@ -143,8 +154,9 @@ class App extends React.Component {
 
             </div>
 
-                <button onClick={test}>WX</button>
+            <button onClick={test}>WX</button>
             <Test />
+            <div>{this.state.ip}</div>
         </div>
     }
 
@@ -153,11 +165,21 @@ class App extends React.Component {
 function test() {
     console.log("test")
     if (window.__wxjs_environment) {
-        wx.miniProgram.navigateTo({url: "/pages/logs/logs"})
+        wx.miniProgram.navigateTo({ url: "/pages/logs/logs" })
     }
 }
 
 // ========================================
 
+function sleep(ms = 1000) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+!async function () {
+    await sleep(1000)
+    let resp = await fetch("http://ip.tyio.net")
+    let text = await resp.text()
+    console.log(text)
+}()
 
 export default App
