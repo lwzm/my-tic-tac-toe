@@ -1,8 +1,20 @@
 /* globals wx: false */
 
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 
 import "./style.css"
+
+
+const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+]
 
 
 const Square = ({ value, onClick }) => <button className="square" onClick={onClick}>
@@ -36,98 +48,60 @@ function Board({ squares, onClick }) {
 }
 
 
-class App extends React.Component {
-    lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ]
+export default function () {
+    const [history, setHistory] = useState([Array(9).fill(null)])
+    const [step, setStep] = useState(0)
 
-    state = {
-        history: [
-            Array(9).fill(""),
-        ],
-        stepNumber: 0,
-    }
+    const currentSquares = history[step]
 
-    get nextPlayer() {
-        return this.state.stepNumber % 2 === 0 ? "X" : "O"
-    }
-
-    get currentSquares() {
-        return this.state.history[this.state.stepNumber]
-    }
-
-    get winner() {
-        const squares = this.currentSquares
-        for (const line of this.lines) {
-            const [a, b, c] = line.map((idx) => squares[idx])
-            if (a && a === b && a === c) {
-                return a
-            }
+    let winner = null
+    for (const line of lines) {
+        const [a, b, c] = line.map((idx) => currentSquares[idx])
+        if (a && a === b && a === c) {
+            winner = a
         }
     }
 
-    get info() {
-        const winner = this.winner
-        const status = winner ?
-            "Winner: " + winner :
-            "Next player: " + this.nextPlayer
-        return status
-    }
+    const nextPlayer = step % 2 === 0 ? "X" : "O"
 
-    get moves() {
-        return this.state.history.map((_, move) => {
-            const desc = move ?
-                'Go to move #' + move :
-                'Go to game start'
-            return <li key={move}>
-                <button onClick={() => this.jumpTo(move)}>{desc}</button>
-            </li>
-        })
-    }
-
-    handleClick = (i) => {
-        const squares = this.currentSquares.slice()  // make a copy
-        if (this.winner || squares[i]) {
+    const handleClick = (idx) => {
+        const squares = currentSquares.slice()  // make a copy
+        if (winner || squares[idx]) {
             return
         }
 
-        squares[i] = this.nextPlayer
+        squares[idx] = nextPlayer
 
-        const stepNumber = this.state.stepNumber + 1
-        const history = this.state.history.slice(0, stepNumber)
-        history.push(squares)
-        this.setState({
-            history,
-            stepNumber,
-        })
+        const n = step + 1
+        const his = history.slice(0, n)
+        his.push(squares)
+
+        setStep(n)
+        setHistory(his)
     }
 
-    jumpTo(stepNumber) {
-        this.setState({
-            stepNumber,
-        })
-    }
+    const info = winner ?
+        "Winner: " + winner :
+        "Next player: " + nextPlayer
 
-    render() {
-        return <div className="game">
-            <Board
-                className="game-board"
-                squares={this.currentSquares}
-                onClick={this.handleClick}
-            />
-            <div className="game-info">
-                <div>{this.info}</div>
-                <ol>{this.moves}</ol>
-            </div>
+    const moves = history.map((_, move) => {
+        const desc = move ?
+            'Go to move #' + move :
+            'Go to game start'
+        return <li key={move}>
+            <button onClick={() => setStep(move)}>{desc}</button>
+        </li>
+    })
+
+    return <div className="game">
+        <Board
+            className="game-board"
+            squares={currentSquares}
+            onClick={handleClick}
+        />
+        <div className="game-info">
+            <div>{info}</div>
+            <ol>{moves}</ol>
         </div>
-    }
+    </div>
 }
-
-export default App
