@@ -49,8 +49,12 @@ function Board({ squares, onClick }) {
 
 
 export default function () {
-    const [history, setHistory] = useState([Array(9).fill(null)])
     const [step, setStep] = useState(0)
+    const [history, setHistory] = useState(useMemo(() => [Array(9).fill(null)], []))
+
+    useEffect(() => {
+        document.title = nextPlayer
+    })
 
     const currentSquares = history[step]
 
@@ -64,7 +68,7 @@ export default function () {
 
     const nextPlayer = step % 2 === 0 ? "X" : "O"
 
-    const handleClick = (idx) => {
+    function clickSquare(idx) {
         const squares = currentSquares.slice()  // make a copy
         if (winner || squares[idx]) {
             return
@@ -76,8 +80,8 @@ export default function () {
         const his = history.slice(0, n)
         his.push(squares)
 
-        setStep(n)
         setHistory(his)
+        setStep(n)
     }
 
     const info = winner ?
@@ -97,7 +101,7 @@ export default function () {
         <Board
             className="game-board"
             squares={currentSquares}
-            onClick={handleClick}
+            onClick={clickSquare}
         />
         <div className="game-info">
             <div>{info}</div>
