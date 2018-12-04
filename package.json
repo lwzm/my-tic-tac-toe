@@ -1,13 +1,13 @@
 {
   "name": "my-tic-tac-toe",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
-    "axios": "^0.18.0",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4"
+    "axios": "latest",
+    "react": "next",
+    "react-dom": "next",
+    "react-router-dom": "latest",
+    "react-scripts": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,7 +16,14 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "@types/react": "^16.4.7",
-    "@types/react-router-dom": "^4.3.0"
-  }
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/react-router-dom": "latest"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

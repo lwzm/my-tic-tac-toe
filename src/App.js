@@ -1,10 +1,6 @@
-/* globals wx:false */
+/* globals wx: false */
 
-import React from 'react'
-import { ThemeContext, V } from './ctx'
-import Test from './test'
-
-import axios from 'axios'
+import React, { useState, useEffect, useContext } from 'react'
 
 import "./style.css"
 
@@ -36,9 +32,6 @@ function Board({ squares, onClick }) {
             {renderSquare(7)}
             {renderSquare(8)}
         </div>
-        <V.Consumer>
-            {x => <div>{x}</div>}
-        </V.Consumer>
     </div>
 }
 
@@ -55,15 +48,11 @@ class App extends React.Component {
         [2, 4, 6],
     ]
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            history: [
-                Array(9).fill(""),
-            ],
-            stepNumber: 0,
-            ip: "none",
-        }
+    state = {
+        history: [
+            Array(9).fill(""),
+        ],
+        stepNumber: 0,
     }
 
     get nextPlayer() {
@@ -82,7 +71,6 @@ class App extends React.Component {
                 return a
             }
         }
-        return ""
     }
 
     get info() {
@@ -104,15 +92,7 @@ class App extends React.Component {
         })
     }
 
-    handleClick = async (i) => {
-        // axios.get("http://ip.tyio.net").then(rsp => {
-        //     this.setState({ip: rsp.data})
-        // })
-
-        let resp
-        await sleep()
-        resp = await axios.get("http://ip.tyio.net")
-        this.setState({ ip: resp.data })
+    handleClick = (i) => {
         const squares = this.currentSquares.slice()  // make a copy
         if (this.winner || squares[i]) {
             return
@@ -136,50 +116,18 @@ class App extends React.Component {
     }
 
     render() {
-        return <div>
-            <div className="game">
-                <div className="game-board">
-                    <V.Provider value={this.state.stepNumber}>
-                        <Board
-                            squares={this.currentSquares}
-                            onClick={this.handleClick}
-                        />
-                    </V.Provider>
-                </div>
-
-                <div className="game-info">
-                    <div>{this.info}</div>
-                    <ol>{this.moves}</ol>
-                </div>
-
+        return <div className="game">
+            <Board
+                className="game-board"
+                squares={this.currentSquares}
+                onClick={this.handleClick}
+            />
+            <div className="game-info">
+                <div>{this.info}</div>
+                <ol>{this.moves}</ol>
             </div>
-
-            <button onClick={test}>WX</button>
-            <Test />
-            <div>{this.state.ip}</div>
         </div>
     }
-
 }
-
-function test() {
-    console.log("test")
-    if (window.__wxjs_environment) {
-        wx.miniProgram.navigateTo({ url: "/pages/logs/logs" })
-    }
-}
-
-// ========================================
-
-function sleep(ms = 1000) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-!async function () {
-    await sleep(1000)
-    let resp = await fetch("http://ip.tyio.net")
-    let text = await resp.text()
-    console.log(text)
-}()
 
 export default App
