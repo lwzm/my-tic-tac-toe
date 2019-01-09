@@ -16,6 +16,14 @@ const lines = [
     [2, 4, 6],
 ]
 
+function calculateWinner(squares) {
+    for (const line of lines) {
+        const [a, b, c] = line.map((idx) => squares[idx])
+        if (a && a === b && a === c) {
+            return a
+        }
+    }
+}
 
 const Square = ({ value, onClick }) => <button className="square" onClick={onClick}>
     {value}
@@ -57,15 +65,7 @@ export default function () {
     })
 
     const currentSquares = history[step]
-
-    let winner = null
-    for (const line of lines) {
-        const [a, b, c] = line.map((idx) => currentSquares[idx])
-        if (a && a === b && a === c) {
-            winner = a
-        }
-    }
-
+    const winner = calculateWinner(currentSquares)
     const nextPlayer = step % 2 === 0 ? "X" : "O"
 
     function clickSquare(idx) {
