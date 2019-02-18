@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "latest",
-    "react": "next",
-    "react-dom": "next",
+    "react": "latest",
+    "react-dom": "latest",
     "react-router-dom": "latest",
     "react-scripts": "latest"
   },
