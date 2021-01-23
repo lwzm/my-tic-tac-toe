@@ -1,6 +1,5 @@
-/* globals wx: false */
 
-import React, { useState, useEffect, useContext, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 
 import "./style.css"
 
@@ -56,7 +55,7 @@ function Board({ squares, onClick }) {
 }
 
 
-export default function () {
+function App() {
     const [step, setStep] = useState(0)
     const [history, setHistory] = useState(useMemo(() => [Array(9).fill(null)], []))
 
@@ -109,3 +108,5 @@ export default function () {
         </div>
     </div>
 }
+
+export default App
